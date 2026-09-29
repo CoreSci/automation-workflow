@@ -1,7 +1,7 @@
 """Log in to a Telnet server, run a command and print the session output.
 
 Problem: automate a command on a device or host that offers only a Telnet
-console (older network gear, embedded controllers, lab or test equipment).
+console (older network gear, embedded controllers).
 
 How it works: connects, answers the ``login:`` and ``Password:`` prompts
 (the password is read with ``getpass``, so it's never echoed or stored),
@@ -11,7 +11,7 @@ Adapted from: the Python standard-library documentation, ``telnetlib``
 "Telnet Example".
 
 Security note: Telnet sends credentials in clear text. Use it only on isolated
-or lab networks; prefer SSH (e.g. ``paramiko``) everywhere else.
+or test networks; prefer SSH (e.g. ``paramiko``) everywhere else.
 
 Compatibility: ``telnetlib`` is deprecated and was removed in Python 3.13.
 Run this with Python <= 3.12, or port it to ``telnetlib3``.

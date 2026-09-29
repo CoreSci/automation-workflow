@@ -1,6 +1,6 @@
 """Call a SOAP web service from Python by reading its WSDL with ``suds``.
 
-Problem: many legacy enterprise and lab systems still expose SOAP/WSDL APIs
+Problem: many legacy enterprise systems still expose SOAP/WSDL APIs
 rather than REST. ``suds`` reads the WSDL and generates the client methods, so
 no hand-written XML envelopes are needed.
 
