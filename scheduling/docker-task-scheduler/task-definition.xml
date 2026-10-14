@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<!--
+  Task Scheduler definition for run-container.bat or run-compose-job.bat.
+  register-task.bat fills in __SCRIPT_DIR__ and __SCRIPT__ and registers it for
+  the current user.
+
+  Key choices (see README for the reasoning):
+    * InteractiveToken + LeastPrivilege: runs as you, while you are logged on, with
+      no stored password. To run while nobody is logged on, switch the task to
+      "Run whether user is logged on or not" in Task Scheduler (it asks for your
+      password) and set START_DOCKER_DESKTOP=1 in config.bat. See README.
+    * MultipleInstancesPolicy IgnoreNew: never start a second copy while one runs.
+    * StartWhenAvailable: if the PC was off or asleep at 06:00, run as soon as possible.
+    * ExecutionTimeLimit PT2H: kill a hung run after 2 hours.
+    * RestartOnFailure: retry twice, 15 minutes apart, if the task fails to run.
+-->
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>Runs a Docker job via __SCRIPT__ and logs the result.</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <CalendarTrigger>
+      <StartBoundary>2026-01-01T06:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByDay>
+        <DaysInterval>1</DaysInterval>
+      </ScheduleByDay>
+    </CalendarTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
+    <RestartOnFailure>
+      <Interval>PT15M</Interval>
+      <Count>2</Count>
+    </RestartOnFailure>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>__SCRIPT_DIR__\__SCRIPT__</Command>
+      <WorkingDirectory>__SCRIPT_DIR__</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

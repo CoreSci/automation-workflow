@@ -1,0 +1,26 @@
+# Long-running service for run-compose-job.bat.
+#
+# The container just stays up (sleep infinity): no notebook server and no open
+# port. Each scheduled run execs a job inside it with "docker compose exec".
+# Pin the image tag once it works, so a new "latest" can't change a scheduled
+# job overnight.
+services:
+  notebook:
+    image: quay.io/jupyter/scipy-notebook:latest
+    command: ["sleep", "infinity"]
+    # The Jupyter images ship a HEALTHCHECK that probes the notebook server.
+    # With no server running, the container reports "unhealthy" and
+    # "docker compose up --wait" fails. Replace it with a check that only
+    # confirms the container is up. ("disable: true" doesn't work either:
+    # --wait then fails with "no healthcheck configured".)
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 2s
+    working_dir: /home/jovyan/work
+    volumes:
+      - ./notebooks:/home/jovyan/work:ro      # notebooks: read-only
+      - ./output:/home/jovyan/output          # results written here
+    restart: unless-stopped

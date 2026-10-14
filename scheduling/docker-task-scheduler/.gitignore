@@ -1,0 +1,5 @@
+# Machine-specific settings and run artefacts stay local
+config.bat
+logs/
+output/
+*.env
