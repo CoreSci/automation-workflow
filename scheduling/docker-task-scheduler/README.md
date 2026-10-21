@@ -143,7 +143,7 @@ With `FAIL=1` in `EXEC_ARGS`, the notebook raises in its first code cell. The lo
 
 Docker Desktop is a desktop application: it normally starts when you sign in, and runs in your session. A task set to *Run only when user is logged on* therefore has nothing to talk to after a restart until someone signs in.
 
-A task can still run with nobody signed in. The original setup this unit was rebuild from was verified over several weeks on a real weekday task, including mornings after restarts with no sign-in, when the job still ran and completed every time:
+A task can still run with nobody signed in. The original setup this unit was rebuilt from was verified over several weeks on a real weekday task, including mornings after restarts with no sign-in, when the job still ran and completed every time:
 
 1. In Task Scheduler, open the task → *General* → **Run whether user is logged on or not**. Windows asks for your password and stores it with the task (`LogonType` becomes `Password`). In that setup the task also had *Run with highest privileges* ticked; whether it's strictly needed wasn't tested separately.
 2. Set `START_DOCKER_DESKTOP=1` in `config.bat`. When Docker Desktop isn't running, the launcher starts it within the task's own session, then waits for the engine as usual. On later runs it finds Docker Desktop already running and goes straight to the job.
@@ -201,4 +201,5 @@ schtasks /Create /TN "DockerScheduledJob" /SC DAILY /ST 06:00 /TR "\"%CD%\run-co
 - **Always exiting 0.** Logging "FAILED" but then reaching the end of the script without `EXIT /B <code>` reports success to Task Scheduler. *Last Run Result* shows `0x0` every day, even on days the job failed. Carry the job's exit code to the end of the script.
 - **Unicode box-drawing characters and LF line endings.** A batch file saved from an editor as UTF-8 with `═══` banners and Unix line endings mostly works, until it doesn't. cmd reads the file in the console's code page, so the characters turn to garbage in the log, and LF-only lines can break `GOTO`/`CALL :label`. Keep batch files ASCII with CRLF.
 - **A fixed pause instead of a readiness check.** `timeout /t 45` after starting Docker Desktop, and `timeout /t 10` after `docker compose up -d`, are too long on a fast day and too short on a slow one. Poll `docker info`, and use `docker compose up --wait`.
+
 **Testing status:** `register-task.bat` and the `START_DOCKER_DESKTOP=1` auto-start option have not been tested on their own.
